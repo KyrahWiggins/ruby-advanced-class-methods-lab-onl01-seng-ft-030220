@@ -1,90 +1,57 @@
 class Song
-  attr_accessor :name, :artist_name
-  @@all = []
+  attr_reader :title, :artist, :filename, :play_count
 
-  def self.all
-    @@all
+  # Initialize our total play count
+  # This will be set to 0 when the program is loaded
+  @@total_plays = 0
+
+  def initialize(title, artist, filename)
+    @title = title
+    @artist = artist
+    @filename = filename
+    @play_count = 0
   end
 
-  def self.create
-    song = Song.new
-    @@all << song
-    song
+  def summary
+    return "#{@title}, by #{@artist}"
   end
 
-  def self.new_by_name(name)
-    song = Song.new
-    song.name = name
-    song
+  def play
+    @play_count += 1
+    @@total_plays += 1
+    # ... load the song data from the file and send it to the speakers ...
   end
 
-  def self.create_by_name(name)
-    song = self.new
-    song.name = name
-    @@all << song
-    return song
+  def self.total_plays
+    return @@total_plays
   end
 
-  def self.find_by_name(name)
-     self.all.detect{|song| song.name == name}
-   end
-
-  def save
-    self.class.all << self
-  end
-
-   def self.find_or_create_by_name(name)
-     song = self.find_by_name(name)
-     if song then
-        return song
-      else
-        self.create_by_name(name)
+  def self.most_played(song_list)
+    most_played = song_list[0]
+    song_list.each do |song|
+      if song.play_count > most_played.play_count
+        most_played = song
       end
     end
-
-  # def self.alphabetical
-  #   sort=[]
-  #   new=[]
-  #   i=0
-  #     while i< @@all.length
-  #       # puts @@all[i].name
-  #       sort[i]=@@all[i].name
-  #       i+=1
-  #   end
-  #   sort=sort.sort!
-  #   # puts sort
-  #   # @@all.clear
-  #   i=0
-  #   while i < sort.length
-  #     # puts sort[i]
-  #     new <<  Song.find_by_name(sort[i])
-  #     i+=1
-  #   end
-  #   return new
-  # end
-    def self.alphabetical
-      self.all.sort_by{|s| s.name}
-    end
- def self.new_from_filename(filename)
-          array=[]
-          new_ar=[]
-          array=filename.split("- ")
-          artist_name=array[0]
-          # @artist_name=artist_name
-          new_ar=array[1].partition(".")
-          name=new_ar[0]
-          song = self.new
-          song.artist_name = artist_name
-           @@all << song
-            song = self.new
-          song.name = name
-          @@all << song
-         return @@all
-   end
+    return most_played
+  end
 end
-# song = Song.new_from_filename("Taylor Swift - Blank Space.mp3")
-# Song.create_from_filename("Thundercat - For Love I Come.mp3")
-song_1 = Song.create_by_name("Thriller")
-      song_2 = Song.create_by_name("Blank Space")
-      song_3 = Song.create_by_name("Call Me Maybe")
-Song.alphabetical
+
+s1 = Song.new("Respect", "Aretha Franklin", "songs/respect.mp3")
+s2 = Song.new("What a Little Moonlight Can Do", "Billie Holiday", "songs/moonlight.mp3")
+s3 = Song.new("Adore", "Savages", "songs/adore.mp3")
+
+3.times do
+  s1.play
+end
+
+5.times do
+  s2.play
+end
+
+2.times do
+  s3.play
+end
+
+top_song = Song.most_played([s1, s2, s3])
+puts top_song.summary
