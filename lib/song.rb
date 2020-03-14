@@ -1,57 +1,88 @@
 class Song
-  attr_reader :title, :artist, :filename, :play_count
+  attr_accessor :name, :artist_name
+  @@all = []
 
-  # Initialize our total play count
-  # This will be set to 0 when the program is loaded
-  @@total_plays = 0
-
-  def initialize(title, artist, filename)
-    @title = title
-    @artist = artist
-    @filename = filename
-    @play_count = 0
+  def self.all
+    @@all
   end
 
-  def summary
-    return "#{@title}, by #{@artist}"
+  def save
+    self.class.all << self
   end
 
-  def play
-    @play_count += 1
-    @@total_plays += 1
-    # ... load the song data from the file and send it to the speakers ...
+# self.create means song.create because self is the class Song
+# in this class method, we initialize a song and save it with the .save method. If we look at the .save class method, it's saying that the class itself (song in this case) should be saved to the @@all array.
+
+  def self.create
+    song = Song.new 
+    song.save 
+    song
   end
 
-  def self.total_plays
-    return @@total_plays
+#self.new_by_name means song.new_by_name
+#takes string of song and returns a song instance with that name as its name property
+
+  def self.new_by_name(song_name)
+    song = self.new 
+    song.name = song_name
+    song
   end
 
-  def self.most_played(song_list)
-    most_played = song_list[0]
-    song_list.each do |song|
-      if song.play_count > most_played.play_count
-        most_played = song
-      end
-    end
-    return most_played
+#self.create_by_name means song.create_by_name
+#takes string of song and returns a song instance with that name as its name property AND the song saved into @@all
+#calls the self.create instance method on the song because we want to save the song which is done in the self.create method
+
+  def self.create_by_name(song_name)
+    song = self.create     
+    song.name = song_name
+    song
+  end
+
+#takes string name of a song and returns matching instance of the song with that song name.
+
+  def self.find_by_name(song_name)
+    self.all.detect { |song|
+      song.name == song_name
+    }
+  end
+
+#takes a string name of a song and either returns a matching song instance with that name or create a new song with the name and returns the song instance.
+
+#uses the find_by_name method to find the song name that returns the matching instance if the song has the same song name.
+
+#uses the create_by_method
+
+  def self.find_or_create_by_name(song_name)
+    self.find_by_name(song_name) || self.create_by_name(song_name)
+  end
+
+  def self.alphabetical
+    self.all.sort_by { |song|
+      song.name
+    }
+  end
+
+  def self.new_from_filename(filename)
+    new_file = filename.split(" - ") #'initializes a song and artist_name based on the filename format'
+    artist_name = new_file[0]
+    song_name = new_file[1].gsub(".mp3","")
+    song = self.new
+    song.name = song_name
+    song.artist_name = artist_name
+    song
+  end
+
+  def self.create_from_filename(filename)
+    new_file = filename.split(" - ") #'initializes and saves a song and artist_name based on the filename format'
+    artist_name = new_file[0]
+    song_name = new_file[1].gsub(".mp3","")
+    song = self.create
+    song.name = song_name
+    song.artist_name = artist_name
+    song
+  end
+
+  def self.destroy_all
+    self.all.clear
   end
 end
-
-s1 = Song.new("Respect", "Aretha Franklin", "songs/respect.mp3")
-s2 = Song.new("What a Little Moonlight Can Do", "Billie Holiday", "songs/moonlight.mp3")
-s3 = Song.new("Adore", "Savages", "songs/adore.mp3")
-
-3.times do
-  s1.play
-end
-
-5.times do
-  s2.play
-end
-
-2.times do
-  s3.play
-end
-
-top_song = Song.most_played([s1, s2, s3])
-puts top_song.summary
