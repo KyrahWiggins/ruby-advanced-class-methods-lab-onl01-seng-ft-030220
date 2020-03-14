@@ -14,8 +14,8 @@ class Song
 # in this class method, we initialize a song and save it with the .save method. If we look at the .save class method, it's saying that the class itself (song in this case) should be saved to the @@all array.
 
   def self.create
-    song = Song.new 
-    song.save 
+    song = Song.new
+    song.save
     song
   end
 
@@ -23,7 +23,7 @@ class Song
 #takes string of song and returns a song instance with that name as its name property
 
   def self.new_by_name(song_name)
-    song = self.new 
+    song = self.new
     song.name = song_name
     song
   end
@@ -33,7 +33,7 @@ class Song
 #calls the self.create instance method on the song because we want to save the song which is done in the self.create method
 
   def self.create_by_name(song_name)
-    song = self.create     
+    song = self.create
     song.name = song_name
     song
   end
