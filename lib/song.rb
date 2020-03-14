@@ -50,8 +50,8 @@ class Song
   end
 
   def self.all
-    @@all	    
-  end	 
+    @@all
+  end
     self.class.all << self
   end
 
